@@ -3,59 +3,298 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>⚡ Tienda Starter - Headless</title>
+    <title>Tienda Pro - Ecommerce Headless</title>
     
-    <!-- Snipcart (CDN) -->
+    <!-- Snipcart -->
     <link rel="stylesheet" href="https://cdn.snipcart.com/themes/v3.2.0/default/snipcart.css" />
     <script async src="https://cdn.snipcart.com/themes/v3.2.0/default/snipcart.js"></script>
+    
+    <!-- Font Awesome (Iconos) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     
     <!-- Tu CSS -->
     <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
 
-    <!-- ========== HEADER ========== -->
-    <header>
-        <div class="logo">⚡ MiTienda</div>
-        <nav>
-            <a href="#">Inicio</a>
-            <a href="#">Productos</a>
-            <a href="#">Contacto</a>
-        </nav>
-        <!-- Botón del carrito de Snipcart -->
-        <button class="snipcart-checkout">
-            🛒 <span class="snipcart-total-price">$0.00</span>
-        </button>
+    <!-- ========== NAVBAR ========== -->
+    <header class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <i class="fas fa-bolt" style="color: #3b82f6;"></i>
+                <span>Tienda<span style="color: #3b82f6;">Pro</span></span>
+            </div>
+            <nav class="nav-links">
+                <a href="#inicio">Inicio</a>
+                <a href="#categorias">Categorías</a>
+                <a href="#productos">Productos</a>
+                <a href="#testimonios">Testimonios</a>
+                <a href="#contacto">Contacto</a>
+            </nav>
+            <div class="nav-actions">
+                <button class="btn-cart snipcart-checkout">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span class="cart-total snipcart-total-price">$0.00</span>
+                </button>
+                <button class="btn-mobile" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
     </header>
 
-    <!-- ========== HERO (Para impresionar) ========== -->
-    <section class="hero">
-        <h1>Tienda Headless <br />⚡ Velocidad extrema</h1>
-        <p>Esta maqueta carga en <strong>0.3 segundos</strong>. Ideal para tu negocio.</p>
-        <a href="#productos" class="btn">Ver productos</a>
+    <!-- ========== HERO SECTION ========== -->
+    <section class="hero" id="inicio">
+        <div class="container">
+            <div class="hero-content">
+                <span class="hero-badge">
+                    <i class="fas fa-rocket"></i> Lanzamiento 2026
+                </span>
+                <h1>
+                    La tienda online más<br />
+                    <span class="gradient-text">rápida del mercado</span>
+                </h1>
+                <p class="hero-description">
+                    Ecommerce con arquitectura headless. Carga en <strong>0.3 segundos</strong>, 
+                    sin plugins lentos, sin complicaciones. Diseñado para vender más.
+                </p>
+                <div class="hero-buttons">
+                    <a href="#productos" class="btn-primary">
+                        <i class="fas fa-shopping-cart"></i> Ver productos
+                    </a>
+                    <a href="#contacto" class="btn-secondary">
+                        <i class="fas fa-headset"></i> Contactar
+                    </a>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <span class="stat-number">0.3s</span>
+                        <span class="stat-label">Tiempo de carga</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">100%</span>
+                        <span class="stat-label">Seguro y cifrado</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">24/7</span>
+                        <span class="stat-label">Soporte técnico</span>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-image">
+                <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600" 
+                     alt="Dashboard de tienda" 
+                     loading="lazy" />
+                <div class="floating-card card-1">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span>+150 ventas</span>
+                </div>
+                <div class="floating-card card-2">
+                    <i class="fas fa-star"></i>
+                    <span>4.9 ★</span>
+                </div>
+            </div>
+        </div>
+        <div class="hero-wave">
+            <svg viewBox="0 0 1440 120" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0,60 C360,120 720,0 1080,60 C1260,90 1380,70 1440,50 L1440,120 L0,120Z" 
+                      fill="#f8fafc" />
+            </svg>
+        </div>
     </section>
 
-    <!-- ========== PRODUCTOS ========== -->
-    <section id="productos" class="products">
-        <h2>🔥 Productos Destacados</h2>
-        <div class="product-grid" id="productGrid">
-            <!-- Los productos se cargarán con JavaScript desde un JSON -->
+    <!-- ========== CATEGORÍAS ========== -->
+    <section class="categories" id="categorias">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Categorías</span>
+                <h2>Explora por <span class="gradient-text">categorías</span></h2>
+                <p>Encuentra lo que necesitas en nuestra selección organizada</p>
+            </div>
+            <div class="categories-grid">
+                <div class="category-card">
+                    <div class="category-icon">
+                        <i class="fas fa-laptop"></i>
+                    </div>
+                    <h3>Electrónica</h3>
+                    <p>12 productos</p>
+                </div>
+                <div class="category-card">
+                    <div class="category-icon">
+                        <i class="fas fa-tshirt"></i>
+                    </div>
+                    <h3>Moda</h3>
+                    <p>8 productos</p>
+                </div>
+                <div class="category-card">
+                    <div class="category-icon">
+                        <i class="fas fa-home"></i>
+                    </div>
+                    <h3>Hogar</h3>
+                    <p>15 productos</p>
+                </div>
+                <div class="category-card">
+                    <div class="category-icon">
+                        <i class="fas fa-dumbbell"></i>
+                    </div>
+                    <h3>Deportes</h3>
+                    <p>6 productos</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== PRODUCTOS DESTACADOS ========== -->
+    <section class="products" id="productos">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Productos</span>
+                <h2>Lo más <span class="gradient-text">destacado</span></h2>
+                <p>Los productos más populares de nuestra tienda</p>
+            </div>
+            <div class="product-grid" id="productGrid">
+                <!-- Los productos se cargan con JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== TESTIMONIOS ========== -->
+    <section class="testimonials" id="testimonios">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Testimonios</span>
+                <h2>Lo que dicen <span class="gradient-text">nuestros clientes</span></h2>
+                <p>Historias reales de emprendedores como tú</p>
+            </div>
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <div class="testimonial-stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p>"Mi tienda pasó de cargar en 4 segundos a 0.8 segundos. Mis ventas subieron un 23%."</p>
+                    <div class="testimonial-author">
+                        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Cliente" />
+                        <div>
+                            <strong>Carlos M.</strong>
+                            <span>Dueño de tienda de moda</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p>"El soporte es increíble. En menos de 1 hora ya tenía mi tienda funcionando en mi dominio."</p>
+                    <div class="testimonial-author">
+                        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Cliente" />
+                        <div>
+                            <strong>Laura G.</strong>
+                            <span>Emprendedora digital</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p>"La mejor inversión para mi negocio. Ahora puedo gestionar mis productos sin complicaciones."</p>
+                    <div class="testimonial-author">
+                        <img src="https://randomuser.me/api/portraits/men/67.jpg" alt="Cliente" />
+                        <div>
+                            <strong>Javier R.</strong>
+                            <span>CEO de tienda tech</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== NEWSLETTER ========== -->
+    <section class="newsletter">
+        <div class="container">
+            <div class="newsletter-content">
+                <h2>¿Listo para <span class="gradient-text">impulsar tu negocio</span>?</h2>
+                <p>Suscríbete para recibir ofertas exclusivas y novedades</p>
+                <form class="newsletter-form" id="newsletterForm">
+                    <input type="email" placeholder="tu@email.com" required />
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-paper-plane"></i> Suscribirme
+                    </button>
+                </form>
+            </div>
         </div>
     </section>
 
     <!-- ========== FOOTER ========== -->
-    <footer>
-        <p>© 2026 MiTienda - Maqueta profesional para clientes</p>
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="nav-brand">
+                        <i class="fas fa-bolt" style="color: #3b82f6;"></i>
+                        <span>Tienda<span style="color: #3b82f6;">Pro</span></span>
+                    </div>
+                    <p>La tienda online más rápida y segura del mercado. Hecha para emprendedores que quieren vender más.</p>
+                    <div class="footer-social">
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="footer-links">
+                    <h4>Enlaces</h4>
+                    <a href="#inicio">Inicio</a>
+                    <a href="#productos">Productos</a>
+                    <a href="#testimonios">Testimonios</a>
+                    <a href="#contacto">Contacto</a>
+                </div>
+                <div class="footer-links">
+                    <h4>Soporte</h4>
+                    <a href="#">Preguntas frecuentes</a>
+                    <a href="#">Política de privacidad</a>
+                    <a href="#">Términos y condiciones</a>
+                    <a href="#">Devoluciones</a>
+                </div>
+                <div class="footer-contact">
+                    <h4>Contacto</h4>
+                    <p><i class="fas fa-envelope"></i> hola@tiendapro.com</p>
+                    <p><i class="fas fa-phone"></i> +34 600 123 456</p>
+                    <p><i class="fas fa-map-marker-alt"></i> Madrid, España</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2026 TiendaPro. Todos los derechos reservados.</p>
+                <div class="footer-payments">
+                    <i class="fab fa-cc-visa"></i>
+                    <i class="fab fa-cc-mastercard"></i>
+                    <i class="fab fa-cc-paypal"></i>
+                    <i class="fab fa-cc-stripe"></i>
+                </div>
+            </div>
+        </div>
     </footer>
 
-    <!-- ========== CONFIGURACIÓN SNIPCART ========== -->
-    <!-- IMPORTANTE: Cambia "YOUR_API_KEY" por tu clave de prueba -->
+    <!-- ========== SNIPCART CONFIG ========== -->
     <div hidden id="snipcart" 
-         data-api-key="NWE5OGQ0OGQtMTBlZi00OWVlLTk5YzYtZTY3MzZiOGJmODE0NjM5MjQ0Mjg4Mjk1Mjg1Mjc4"
+         data-api-key="YOUR_API_KEY"
          data-config-modal-style="side">
     </div>
 
-    <!-- ========== TU JAVASCRIPT ========== -->
+    <!-- ========== JAVASCRIPT ========== -->
     <script src="js/main.js"></script>
 </body>
 </html>
