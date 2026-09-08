@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>⚡ Tienda Starter - Headless</title>
+    
+    <!-- Snipcart (CDN) -->
+    <link rel="stylesheet" href="https://cdn.snipcart.com/themes/v3.2.0/default/snipcart.css" />
+    <script async src="https://cdn.snipcart.com/themes/v3.2.0/default/snipcart.js"></script>
+    
+    <!-- Tu CSS -->
+    <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+    <!-- ========== HEADER ========== -->
+    <header>
+        <div class="logo">⚡ MiTienda</div>
+        <nav>
+            <a href="#">Inicio</a>
+            <a href="#">Productos</a>
+            <a href="#">Contacto</a>
+        </nav>
+        <!-- Botón del carrito de Snipcart -->
+        <button class="snipcart-checkout">
+            🛒 <span class="snipcart-total-price">$0.00</span>
+        </button>
+    </header>
+
+    <!-- ========== HERO (Para impresionar) ========== -->
+    <section class="hero">
+        <h1>Tienda Headless <br />⚡ Velocidad extrema</h1>
+        <p>Esta maqueta carga en <strong>0.3 segundos</strong>. Ideal para tu negocio.</p>
+        <a href="#productos" class="btn">Ver productos</a>
+    </section>
+
+    <!-- ========== PRODUCTOS ========== -->
+    <section id="productos" class="products">
+        <h2>🔥 Productos Destacados</h2>
+        <div class="product-grid" id="productGrid">
+            <!-- Los productos se cargarán con JavaScript desde un JSON -->
+        </div>
+    </section>
+
+    <!-- ========== FOOTER ========== -->
+    <footer>
+        <p>© 2026 MiTienda - Maqueta profesional para clientes</p>
+    </footer>
+
+    <!-- ========== CONFIGURACIÓN SNIPCART ========== -->
+    <!-- IMPORTANTE: Cambia "YOUR_API_KEY" por tu clave de prueba -->
+    <div hidden id="snipcart" 
+         data-api-key="NWE5OGQ0OGQtMTBlZi00OWVlLTk5YzYtZTY3MzZiOGJmODE0NjM5MjQ0Mjg4Mjk1Mjg1Mjc4"
+         data-config-modal-style="side">
+    </div>
+
+    <!-- ========== TU JAVASCRIPT ========== -->
+    <script src="js/main.js"></script>
+</body>
+</html>
