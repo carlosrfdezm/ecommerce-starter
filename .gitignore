@@ -1,0 +1,35 @@
+# Dependencias (se instalan con Composer, no se versionan)
+vendor/
+node_modules/
+
+# Configuración con credenciales
+includes/config.php
+.env
+.env.local
+
+# Logs
+*.log
+logs/
+error_log
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Archivos temporales
+*.tmp
+*.bak
+*.cache
+
+# Backups
+*.sql
+*.zip
+backup/
