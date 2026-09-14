@@ -6,25 +6,6 @@ require_once '../includes/config.php';
 require_once '../includes/auth.php';
 verificarAdmin();
 
-// Estadísticas
-$stats = [];
-
-// Total de productos
-$stmt = $pdo->query("SELECT COUNT(*) as total FROM productos");
-$stats['productos'] = $stmt->fetch()['total'];
-
-// Total de pedidos
-$stmt = $pdo->query("SELECT COUNT(*) as total FROM pedidos");
-$stats['pedidos'] = $stmt->fetch()['total'];
-
-// Total de ingresos
-$stmt = $pdo->query("SELECT SUM(total) as total FROM pedidos WHERE estado != 'cancelado'");
-$stats['ingresos'] = $stmt->fetch()['total'] ?? 0;
-
-// Total de clientes (email únicos)
-$stmt = $pdo->query("SELECT COUNT(DISTINCT cliente_email) as total FROM pedidos");
-$stats['clientes'] = $stmt->fetch()['total'];
-
 // Últimos pedidos
 $stmt = $pdo->query("SELECT * FROM pedidos ORDER BY created_at DESC LIMIT 10");
 $ultimos_pedidos = $stmt->fetchAll();
@@ -44,14 +25,8 @@ $stock_bajo = $stmt->fetchAll();
 </head>
 <body>
     <div class="admin-container">
-        <!-- ===================================================== -->
-        <!-- SIDEBAR -->
-        <!-- ===================================================== -->
         <?php include 'includes/sidebar.php'; ?>
         
-        <!-- ===================================================== -->
-        <!-- MAIN CONTENT -->
-        <!-- ===================================================== -->
         <main class="main-content">
             <header class="content-header">
                 <h1>Dashboard</h1>
@@ -61,15 +36,16 @@ $stock_bajo = $stmt->fetchAll();
                 </span>
             </header>
             
-            <!-- Stats -->
+            <!-- STATS CARDS -->
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-icon blue">
                         <i class="fas fa-box"></i>
                     </div>
                     <div class="stat-info">
-                        <span class="stat-number"><?php echo $stats['productos']; ?></span>
+                        <span class="stat-number" id="stat-productos">—</span>
                         <span class="stat-label">Productos</span>
+                        <span class="stat-cambio neutro" id="cambio-productos"></span>
                     </div>
                 </div>
                 
@@ -78,8 +54,9 @@ $stock_bajo = $stmt->fetchAll();
                         <i class="fas fa-shopping-bag"></i>
                     </div>
                     <div class="stat-info">
-                        <span class="stat-number"><?php echo $stats['pedidos']; ?></span>
+                        <span class="stat-number" id="stat-pedidos">—</span>
                         <span class="stat-label">Pedidos</span>
+                        <span class="stat-cambio neutro" id="cambio-pedidos"></span>
                     </div>
                 </div>
                 
@@ -88,8 +65,9 @@ $stock_bajo = $stmt->fetchAll();
                         <i class="fas fa-dollar-sign"></i>
                     </div>
                     <div class="stat-info">
-                        <span class="stat-number">$<?php echo number_format($stats['ingresos'], 2); ?></span>
+                        <span class="stat-number" id="stat-ingresos">—</span>
                         <span class="stat-label">Ingresos</span>
+                        <span class="stat-cambio neutro" id="cambio-ingresos"></span>
                     </div>
                 </div>
                 
@@ -98,13 +76,92 @@ $stock_bajo = $stmt->fetchAll();
                         <i class="fas fa-users"></i>
                     </div>
                     <div class="stat-info">
-                        <span class="stat-number"><?php echo $stats['clientes']; ?></span>
+                        <span class="stat-number" id="stat-clientes">—</span>
                         <span class="stat-label">Clientes</span>
+                        <span class="stat-cambio neutro" id="cambio-clientes"></span>
                     </div>
                 </div>
             </div>
             
-            <!-- Últimos Pedidos -->
+            <!-- GRÁFICOS FILA 1 -->
+            <div class="charts-grid">
+                <div class="chart-card chart-wide">
+                    <div class="chart-header">
+                        <h2><i class="fas fa-chart-line"></i> Ventas últimos 30 días</h2>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="chartVentas"></canvas>
+                    </div>
+                </div>
+                
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h2><i class="fas fa-trophy"></i> Top 5 productos</h2>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="chartTopProductos"></canvas>
+                        <div id="topProductosVacio" style="display:none;text-align:center;color:#94a3b8;padding:2rem;">
+                            No hay ventas todavía
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- GRÁFICOS FILA 2 -->
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h2><i class="fas fa-chart-pie"></i> Ventas por categoría</h2>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="chartVentasCategoria"></canvas>
+                        <div id="ventasCategoriaVacio" style="display:none;text-align:center;color:#94a3b8;padding:2rem;">
+                            No hay ventas todavía
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-exclamation-triangle"></i> Productos con stock bajo</h2>
+                        <a href="inventario.php" class="btn-link">Ir a inventario →</a>
+                    </div>
+                    <div class="card-body">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Producto</th>
+                                    <th>Stock</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php if (count($stock_bajo) > 0): ?>
+                                    <?php foreach ($stock_bajo as $producto): ?>
+                                        <tr>
+                                            <td><?php echo htmlspecialchars($producto['nombre']); ?></td>
+                                            <td>
+                                                <span class="badge badge-danger"><?php echo $producto['stock']; ?></span>
+                                            </td>
+                                            <td>
+                                                <a href="inventario.php" class="btn-sm btn-primary">
+                                                    Actualizar stock
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <tr>
+                                        <td colspan="3" class="text-center">✅ Todos los productos tienen stock suficiente</td>
+                                    </tr>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- ÚLTIMOS PEDIDOS -->
             <div class="card">
                 <div class="card-header">
                     <h2><i class="fas fa-clock"></i> Últimos pedidos</h2>
@@ -145,47 +202,12 @@ $stock_bajo = $stmt->fetchAll();
                     </table>
                 </div>
             </div>
-            
-            <!-- Stock Bajo -->
-            <div class="card">
-                <div class="card-header">
-                    <h2><i class="fas fa-exclamation-triangle"></i> Productos con stock bajo</h2>
-                    <a href="inventario.php" class="btn-link">Ir a inventario →</a>
-                </div>
-                <div class="card-body">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Producto</th>
-                                <th>Stock</th>
-                                <th>Acción</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php if (count($stock_bajo) > 0): ?>
-                                <?php foreach ($stock_bajo as $producto): ?>
-                                    <tr>
-                                        <td><?php echo htmlspecialchars($producto['nombre']); ?></td>
-                                        <td>
-                                            <span class="badge badge-danger"><?php echo $producto['stock']; ?></span>
-                                        </td>
-                                        <td>
-                                            <a href="inventario.php" class="btn-sm btn-primary">
-                                                Actualizar stock
-                                            </a>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <tr>
-                                    <td colspan="3" class="text-center">✅ Todos los productos tienen stock suficiente</td>
-                                </tr>
-                            <?php endif; ?>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
         </main>
     </div>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <!-- Dashboard JS -->
+    <script src="js/dashboard.js"></script>
 </body>
 </html>
