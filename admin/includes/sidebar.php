@@ -14,6 +14,10 @@
             <i class="fas fa-box"></i>
             <span>Productos</span>
         </a>
+        <a href="banners.php" <?php echo basename($_SERVER['PHP_SELF']) == 'banners.php' ? 'class="active"' : ''; ?>>
+            <i class="fas fa-bullhorn"></i>
+            <span>Banners</span>
+        </a>
         <a href="inventario.php" <?php echo basename($_SERVER['PHP_SELF']) == 'inventario.php' ? 'class="active"' : ''; ?>>
             <i class="fas fa-boxes"></i>
             <span>Inventario</span>
