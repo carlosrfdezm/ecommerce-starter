@@ -23,6 +23,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
     $redirect = $_GET['redirect'] ?? 'index.php';
+
+    // ✅ Seguridad: evitar open redirect (solo URLs internas)
+    if (strpos($redirect, '://') !== false || strpos($redirect, '//') === 0 || strpos($redirect, '\\') === 0) {
+        $redirect = 'index.php';
+}
     
     if (empty($email) || empty($password)) {
         $error = 'Por favor, completa todos los campos';
@@ -73,6 +78,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // Obtener el redirect de la URL
 $redirect = isset($_GET['redirect']) ? $_GET['redirect'] : 'index.php';
+if (strpos($redirect, '://') !== false || strpos($redirect, '//') === 0 || strpos($redirect, '\\') === 0) {
+    $redirect = 'index.php';
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -209,7 +217,7 @@ $redirect = isset($_GET['redirect']) ? $_GET['redirect'] : 'index.php';
                 </form>
                 
                 <div class="auth-footer">
-                    ¿No tienes cuenta? <a href="registro.php">Regístrate aquí</a>
+                    ¿No tienes cuenta? <a href="registro.php<?php echo isset($_GET['redirect']) ? '?redirect=' . urlencode($_GET['redirect']) : ''; ?>">Regístrate aquí</a>
                 </div>
                 <div class="auth-footer" style="margin-top:0.5rem;font-size:0.85rem;">
                     <a href="admin/login.php">Acceso administrador</a>

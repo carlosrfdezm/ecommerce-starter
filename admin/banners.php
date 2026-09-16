@@ -453,12 +453,14 @@ if (isset($_GET['editar'])) {
                             </div>
 
                             <div class="form-group">
-                                <label for="imagen_url">URL de imagen de fondo (opcional)</label>
-                                <input type="text" id="imagen_url" name="imagen_url"
-                                    value="<?php echo htmlspecialchars($banner_editar['imagen_url'] ?? ''); ?>"
-                                    placeholder="https://ejemplo.com/imagen.jpg o img/banners/verano.jpg">
+                                <label>Imagen de fondo (opcional)</label>
+                                <div id="uploader-banner"></div>
+                                <input type="hidden" 
+                                       id="imagen_url" 
+                                       name="imagen_url"
+                                       value="<?php echo htmlspecialchars($banner_editar['imagen_url'] ?? ''); ?>">
                                 <small style="color:#94a3b8;font-size:0.8rem;display:block;margin-top:0.3rem;">
-                                    Si dejas vacío, se usará el degradado de colores. Si pones una URL, se mostrará como fondo con overlay oscuro.
+                                    Si dejas vacío, se usará el degradado de colores. Si subes una imagen, se mostrará como fondo con overlay oscuro.
                                 </small>
                             </div>
                             
@@ -571,5 +573,26 @@ function usarIconoCustom(valor) {
     });
 }
 </script>
+
+    <script src="js/uploader.js"></script>
+    <script>
+        // ... el script del selector de iconos que ya tienes ...
+        // =====================================================
+        // INICIALIZAR UPLOADER DE BANNER
+        // =====================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            var inputImg = document.getElementById('imagen_url');
+            if (inputImg && document.getElementById('uploader-banner')) {
+                new ImageUploader({
+                    container: '#uploader-banner',
+                    input: '#imagen_url',
+                    tipo: 'banner',
+                    urlInicial: inputImg.value || '',
+                    endpoint: '../api/admin/upload.php'
+                });
+            }
+        });
+    </script>
+</body>
 </body>
 </html>

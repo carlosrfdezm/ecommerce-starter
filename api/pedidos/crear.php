@@ -8,6 +8,11 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST');
 header('Access-Control-Allow-Headers: Content-Type');
 
+// ✅ Iniciar sesión para leer usuario_id
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 // -----------------------------------------------------
 // Funciones helper
 // -----------------------------------------------------
@@ -82,7 +87,12 @@ if ($data === null) {
 // -----------------------------------------------------
 // Validar datos
 // -----------------------------------------------------
-$usuario_id = isset($data['usuario_id']) && $data['usuario_id'] ? intval($data['usuario_id']) : null;
+// ✅ Usar la sesión, no confiar en el frontend
+$usuario_id = $_SESSION['usuario_id'] ?? null;
+
+if (!$usuario_id) {
+    sendError('Debes iniciar sesión para completar la compra', 401);
+}
 $sesion_id  = isset($data['sesion_id']) ? trim($data['sesion_id']) : '';
 $nombre     = trim($data['nombre'] ?? '');
 $email      = trim($data['email'] ?? '');

@@ -48,10 +48,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ");
                 $stmt->execute([$nombre, $email, $hash, $telefono, $direccion]);
                 
-                $success = '✅ ¡Cuenta creada con éxito! Redirigiendo al login...';
-                
-                // Redirigir al login después de 2 segundos
-                header('Refresh: 2; url=login.php');
+                $success = '✅ ¡Cuenta creada con éxito! Redirigiendo...';
+
+                // Redirigir al login conservando el ?redirect=
+                $redirect = $_GET['redirect'] ?? 'checkout.php';
+                // Seguridad: solo URLs internas
+                if (strpos($redirect, '://') !== false || strpos($redirect, '//') === 0 || strpos($redirect, '\\') === 0) {
+                    $redirect = 'login.php';
+                }
+
+                header('Refresh: 2; url=login.php?redirect=' . urlencode($redirect));
             }
         } catch (PDOException $e) {
             $error = 'Error al crear la cuenta: ' . $e->getMessage();
@@ -186,7 +192,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="alert alert-success"><?php echo $success; ?></div>
                 <?php endif; ?>
                 
-                <form method="POST">
+                <form method="POST" action="registro.php<?php echo isset($_GET['redirect']) ? '?redirect=' . urlencode($_GET['redirect']) : ''; ?>">
                     <div class="form-group">
                         <label for="nombre">Nombre completo *</label>
                         <input type="text" id="nombre" name="nombre" 
@@ -234,7 +240,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </form>
                 
                 <div class="auth-footer">
-                    ¿Ya tienes cuenta? <a href="login.php">Inicia sesión aquí</a>
+                    ¿Ya tienes cuenta? <a href="login.php<?php echo isset($_GET['redirect']) ? '?redirect=' . urlencode($_GET['redirect']) : ''; ?>">Inicia sesión aquí</a>
                 </div>
             </div>
         </div>

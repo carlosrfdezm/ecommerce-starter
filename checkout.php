@@ -2,7 +2,14 @@
 // =====================================================
 // PÁGINA DE CHECKOUT - VERSIÓN CON STRIPE
 // =====================================================
+session_start();
 require_once 'includes/config.php';
+
+// ✅ BLOQUEO: si no está logueado, redirigir a login
+if (!isset($_SESSION['usuario_id'])) {
+    header('Location: login.php?redirect=' . urlencode('checkout.php'));
+    exit;
+}
 
 $page_title = 'Checkout';
 

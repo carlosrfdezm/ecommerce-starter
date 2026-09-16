@@ -18,7 +18,7 @@ $page_title = 'Inicio';
     
     
 </head>
-<body>
+<body class="has-bars">
 
         <!-- ===================================================== -->
     <!-- HEADER CON BUSCADOR Y NAVEGACIÓN INTEGRADOS -->
@@ -627,6 +627,41 @@ $page_title = 'Inicio';
         })();
         
         console.log('✅ Tienda inicializada');
+    })();
+
+
+    // =====================================================
+    // OCULTAR BANNER AL HACER SCROLL
+    // =====================================================
+    (function() {
+        var lastScrollY = window.scrollY;
+        var scrollThreshold = 100; // píxeles antes de ocultar el banner
+        var body = document.body;
+        
+        function handleScroll() {
+            var currentScrollY = window.scrollY;
+            
+            // Si hemos bajado más de X píxeles → ocultar banner
+            if (currentScrollY > scrollThreshold) {
+                body.classList.add('banner-hidden');
+            } else {
+                body.classList.remove('banner-hidden');
+            }
+            
+            lastScrollY = currentScrollY;
+        }
+        
+        // Throttle con requestAnimationFrame para mejor rendimiento
+        var ticking = false;
+        window.addEventListener('scroll', function() {
+            if (!ticking) {
+                window.requestAnimationFrame(function() {
+                    handleScroll();
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        }, { passive: true });
     })();
     </script>
 </body>

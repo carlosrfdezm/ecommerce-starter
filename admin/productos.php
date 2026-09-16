@@ -166,8 +166,14 @@ $categorias = $stmt->fetchAll();
                                 <tr>
                                     <td>
                                         <?php if ($producto['imagen_url']): ?>
-                                            <img src="<?php echo htmlspecialchars($producto['imagen_url']); ?>" 
-                                                 alt="" style="width:50px;height:50px;object-fit:cover;border-radius:8px;">
+                                            <?php
+                                            $src = $producto['imagen_url'];
+                                            if ($src && strpos($src, 'http') !== 0 && strpos($src, '/') !== 0) {
+                                                $src = '../' . $src;
+                                            }
+                                            ?>
+                                            <img src="<?php echo htmlspecialchars($src); ?>" 
+                                                alt="" style="width:50px;height:50px;object-fit:cover;border-radius:8px;">
                                         <?php else: ?>
                                             <div style="width:50px;height:50px;background:#f1f5f9;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#94a3b8;">
                                                 <i class="fas fa-image"></i>
@@ -302,14 +308,16 @@ $categorias = $stmt->fetchAll();
                 </div>
                 
                 <!-- IMAGEN -->
+                                <!-- IMAGEN -->
                 <h3 style="margin:1.5rem 0 1rem;color:#3b82f6;">🖼️ Imagen</h3>
                 
                 <div class="form-group">
-                    <label for="imagen_url">URL de la imagen</label>
-                    <input type="url" id="imagen_url" name="imagen_url" 
-                           placeholder="https://ejemplo.com/imagen.jpg" 
-                           value="<?php echo $producto_edit ? htmlspecialchars($producto_edit['imagen_url']) : ''; ?>">
-                    <p class="form-help">Pega la URL de la imagen del producto</p>
+                    <label>Imagen del producto</label>
+                    <div id="uploader-producto"></div>
+                    <input type="hidden" 
+                           id="imagen_url" 
+                           name="imagen_url" 
+                           value="<?php echo $producto_edit ? htmlspecialchars($producto_edit['imagen_url'] ?? '') : ''; ?>">
                 </div>
                 
                 <!-- GARANTÍAS -->
@@ -368,8 +376,9 @@ $categorias = $stmt->fetchAll();
             </form>
         </div>
     </div>
-    
+    <script src="js/uploader.js"></script>
     <script>
+        
         function abrirModal() {
             document.getElementById('productModal').style.display = 'flex';
             document.getElementById('productForm').reset();
@@ -381,6 +390,20 @@ $categorias = $stmt->fetchAll();
             document.getElementById('productModal').style.display = 'none';
             window.location.href = 'productos.php';
         }
+
+                // Inicializar uploader de imagen
+        document.addEventListener('DOMContentLoaded', function() {
+            var inputImg = document.getElementById('imagen_url');
+            if (inputImg && document.getElementById('uploader-producto')) {
+                new ImageUploader({
+                    container: '#uploader-producto',
+                    input: '#imagen_url',
+                    tipo: 'producto',
+                    urlInicial: inputImg.value || '',
+                    endpoint: '../api/admin/upload.php'
+                });
+            }
+        });
     </script>
 </body>
 </html>

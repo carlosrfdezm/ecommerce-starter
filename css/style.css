@@ -15,7 +15,11 @@ body {
     color: #0f172a;
     line-height: 1.6;
     overflow-x: hidden;
-    padding-top: 134px; /* 72 (navbar) + 62 (search) */
+    padding-top: 72px;   /* solo navbar por defecto */
+}
+
+body.has-bars {
+    padding-top: 330px;  /* navbar + banner + search + filters (solo en la home) */
 }
 
 .container {
@@ -1521,7 +1525,7 @@ body {
 
 /* Desktop: navbar 72 + banner 140 + search 62 + filters 56 = 330 */
 body {
-    padding-top: 330px;
+    padding-top: 50px;
 }
 
 .search-section { top: 212px; }  /* 72 + 140 */
@@ -1543,7 +1547,94 @@ body {
 
 /* Móvil pequeño */
 @media (max-width: 480px) {
-    body { padding-top: 246px; }     /* 58 + 90 + 54 + 44 */
+    body { padding-top: 50px; }     /* 58 + 90 + 54 + 44 */
     .search-section { top: 148px; }  /* 58 + 90 */
     .filters-bar { top: 202px; }     /* 58 + 90 + 54 */
+}
+
+/* =====================================================
+   OCULTAR BANNER AL HACER SCROLL
+   ===================================================== */
+
+/* El banner se desliza hacia arriba y desaparece */
+.banners-carousel {
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.35s ease;
+}
+
+/* Cuando el body tiene la clase, el banner se oculta */
+body.banner-hidden .banners-carousel {
+    transform: translateY(-100%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* El buscador y filtros se mueven hacia arriba cuando el banner desaparece */
+.search-section {
+    transition: top 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.filters-bar {
+    transition: top 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Desktop: banner visible → navbar 72 + banner 140 = search top 212 */
+body.banner-hidden .search-section {
+    top: 72px;   /* navbar solo */
+}
+
+body.banner-hidden .filters-bar {
+    top: 134px;  /* navbar 72 + search 62 */
+}
+
+/* El padding-top del body también se reduce para no dejar hueco */
+body {
+    transition: padding-top 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body.banner-hidden {
+    padding-top: 190px;   /* 72 navbar + 62 search + 56 filters */
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    body.banner-hidden .search-section {
+        top: 64px;
+    }
+    
+    body.banner-hidden .filters-bar {
+        top: 122px;   /* 64 + 58 */
+    }
+    
+    body.banner-hidden {
+        padding-top: 174px;   /* 64 + 58 + 52 */
+    }
+}
+
+@media (max-width: 768px) {
+    body.banner-hidden .search-section {
+        top: 60px;
+    }
+    
+    body.banner-hidden .filters-bar {
+        top: 116px;   /* 60 + 56 */
+    }
+    
+    body.banner-hidden {
+        padding-top: 164px;   /* 60 + 56 + 48 */
+    }
+}
+
+@media (max-width: 480px) {
+    body.banner-hidden .search-section {
+        top: 58px;
+    }
+    
+    body.banner-hidden .filters-bar {
+        top: 112px;   /* 58 + 54 */
+    }
+    
+    body.banner-hidden {
+        padding-top: 158px;   /* 58 + 54 + 46 */
+    }
 }

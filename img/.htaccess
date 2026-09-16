@@ -1,0 +1,8 @@
+# No ejecutar PHP en la carpeta de imágenes
+<FilesMatch "\.php$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Permitir solo imágenes
+Options -Indexes
