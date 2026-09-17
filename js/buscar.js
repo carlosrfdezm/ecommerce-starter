@@ -147,6 +147,16 @@ function resetearFiltros() {
     
     var contador = document.getElementById('resultadosContador');
     if (contador) contador.textContent = '';
+
+    // ✅ Ocultar banner de categoría activa
+    if (typeof ocultarBannerCategoria === 'function') {
+        ocultarBannerCategoria();
+    }
+    
+    // ✅ Marcar el chip "Todas" como activo
+    if (typeof marcarChipActivo === 'function') {
+        marcarChipActivo(0);
+    }
     
     // Recargar todos los productos
     if (typeof loadAllProducts === 'function') {

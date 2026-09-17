@@ -243,6 +243,40 @@ console.log('📂 Cargando menú de categorías...');
             font-size: 1rem;
             color: #3b82f6;
         }
+
+        /* Botón de la flecha para desplegar subcategorías */
+        .cat-menu-toggle {
+            background: transparent;
+            border: none;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background 0.2s;
+            flex-shrink: 0;
+            padding: 0;
+        }
+
+        .cat-menu-toggle:hover {
+            background: #e2e8f0;
+        }
+
+        .cat-menu-toggle:hover .cat-menu-arrow {
+            color: #3b82f6;
+        }
+
+        /* El nombre de la categoría como clickable */
+        .cat-menu-parent-left {
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .cat-menu-parent-left:hover .cat-name {
+            color: #3b82f6;
+        }
     `;
     document.head.appendChild(style);
 
@@ -320,35 +354,41 @@ console.log('📂 Cargando menú de categorías...');
             }
             
             var html = '';
-            categorias.forEach(function(cat) {
-                var tieneHijos = cat.subcategorias && cat.subcategorias.length > 0;
-                
-                html += '<div class="cat-menu-item">';
-                html += '  <div class="cat-menu-parent" onclick="toggleCategoria(' + cat.id + ', ' + (tieneHijos ? 'true' : 'false') + ')">';
-                html += '    <div class="cat-menu-parent-left">';
-                html += '      <i class="fas ' + (cat.icono || 'fa-tag') + ' cat-icon"></i>';
-                html += '      <span class="cat-name">' + cat.nombre + '</span>';
-                html += '      <span class="cat-count">(' + (cat.total_productos || 0) + ')</span>';
-                html += '    </div>';
-                if (tieneHijos) {
-                    html += '    <i class="fas fa-chevron-right cat-menu-arrow" id="arrow-' + cat.id + '"></i>';
-                }
+        categorias.forEach(function(cat) {
+            var tieneHijos = cat.subcategorias && cat.subcategorias.length > 0;
+            var nombreEscapado = cat.nombre.replace(/'/g, "\\'");
+            
+            html += '<div class="cat-menu-item">';
+            html += '  <div class="cat-menu-parent">';
+            // El nombre de la categoría → FILTRA
+            html += '    <div class="cat-menu-parent-left" onclick="filtrarCategoriaDesdeMenu(' + cat.id + ', \'' + nombreEscapado + '\')">';
+            html += '      <i class="fas ' + (cat.icono || 'fa-tag') + ' cat-icon"></i>';
+            html += '      <span class="cat-name">' + cat.nombre + '</span>';
+            html += '      <span class="cat-count">(' + (cat.total_productos || 0) + ')</span>';
+            html += '    </div>';
+            // La flecha → DESPLIEGA (solo si tiene hijos)
+            if (tieneHijos) {
+                html += '    <button class="cat-menu-toggle" onclick="event.stopPropagation(); toggleCategoria(' + cat.id + ')" title="Ver subcategorías">';
+                html += '      <i class="fas fa-chevron-right cat-menu-arrow" id="arrow-' + cat.id + '"></i>';
+                html += '    </button>';
+            }
+            html += '  </div>';
+            
+            if (tieneHijos) {
+                html += '  <div class="cat-menu-children" id="children-' + cat.id + '">';
+                cat.subcategorias.forEach(function(sub) {
+                    var subNombreEscapado = sub.nombre.replace(/'/g, "\\'");
+                    html += '    <div class="cat-menu-child" onclick="event.stopPropagation(); filtrarPorCategoria(' + sub.id + ', \'' + subNombreEscapado + '\'); cerrarMenuCategorias();">';
+                    html += '      <i class="fas ' + (sub.icono || 'fa-tag') + '"></i>';
+                    html += '      <span>' + sub.nombre + '</span>';
+                    html += '      <span class="cat-count">' + (sub.total_productos || 0) + '</span>';
+                    html += '    </div>';
+                });
                 html += '  </div>';
-                
-                if (tieneHijos) {
-                    html += '  <div class="cat-menu-children" id="children-' + cat.id + '">';
-                    cat.subcategorias.forEach(function(sub) {
-                        html += '    <div class="cat-menu-child" onclick="event.stopPropagation(); filtrarPorCategoria(' + sub.id + ', \'' + sub.nombre.replace(/'/g, "\\'") + '\'); cerrarMenuCategorias();">';
-                        html += '      <i class="fas ' + (sub.icono || 'fa-tag') + '"></i>';
-                        html += '      <span>' + sub.nombre + '</span>';
-                        html += '      <span class="cat-count">' + (sub.total_productos || 0) + '</span>';
-                        html += '    </div>';
-                    });
-                    html += '  </div>';
-                }
-                
-                html += '</div>';
-            });
+            }
+            
+            html += '</div>';
+        });
             
             body.innerHTML = html;
             
@@ -361,23 +401,24 @@ console.log('📂 Cargando menú de categorías...');
     // =====================================================
     // 5. TOGGLE SUBCATEGORÍAS
     // =====================================================
-    window.toggleCategoria = function(catId, tieneHijos) {
-        if (!tieneHijos) {
-            var catName = document.querySelector('#catMenuPanel .cat-menu-parent[onclick*="' + catId + '"] .cat-name');
-            if (catName) {
-                filtrarPorCategoria(catId, catName.textContent);
-                cerrarMenuCategorias();
-            }
-            return;
-        }
-        
+    // ✅ Filtrar por la categoría (nombre de la categoría padre)
+window.filtrarCategoriaDesdeMenu = function(catId, catName) {
+    console.log('🔍 Filtrando por categoría:', catId, catName);
+    filtrarPorCategoria(catId, catName);
+    cerrarMenuCategorias();
+};
+
+// ✅ Desplegar/cerrar subcategorías (solo la flecha)
+    window.toggleCategoria = function(catId) {
         var children = document.getElementById('children-' + catId);
         var arrow = document.getElementById('arrow-' + catId);
+        if (!children) return;
         
         if (children.classList.contains('open')) {
             children.classList.remove('open');
-            arrow.classList.remove('rotated');
+            if (arrow) arrow.classList.remove('rotated');
         } else {
+            // Cerrar las otras
             document.querySelectorAll('.cat-menu-children.open').forEach(function(el) {
                 el.classList.remove('open');
             });
@@ -386,7 +427,7 @@ console.log('📂 Cargando menú de categorías...');
             });
             
             children.classList.add('open');
-            arrow.classList.add('rotated');
+            if (arrow) arrow.classList.add('rotated');
         }
     };
 

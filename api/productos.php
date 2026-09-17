@@ -49,11 +49,27 @@ try {
     }
     
     // =====================================================
-    // 2. FILTRO POR CATEGORÍA
+    // 2. FILTRO POR CATEGORÍA (incluye subcategorías)
     // =====================================================
     if (isset($_GET['categoria']) && !empty($_GET['categoria']) && is_numeric($_GET['categoria'])) {
-        $filters[] = "p.categoria_id = ?";
-        $params[] = intval($_GET['categoria']);
+        $cat_id = intval($_GET['categoria']);
+        
+        // Obtener la categoría y sus subcategorías
+        $stmt_sub = $pdo->prepare("SELECT id FROM categorias WHERE id = ? OR padre_id = ?");
+        $stmt_sub->execute([$cat_id, $cat_id]);
+        $ids_categorias = $stmt_sub->fetchAll(PDO::FETCH_COLUMN);
+        
+        if (empty($ids_categorias)) {
+            $ids_categorias = [$cat_id];
+        }
+        
+        // Convertir a placeholders (?, ?, ?)
+        $placeholders = implode(',', array_fill(0, count($ids_categorias), '?'));
+        $filters[] = "p.categoria_id IN ($placeholders)";
+        
+        foreach ($ids_categorias as $id) {
+            $params[] = $id;
+        }
     }
     
     // =====================================================
@@ -125,10 +141,19 @@ try {
     $stmt = $pdo->prepare($sql);
     $stmt->execute($params);
     $productos = $stmt->fetchAll();
-    
+
+    // Si se filtró por categoría, devolver el nombre de esa categoría
+    $categoria_info = null;
+    if (isset($_GET['categoria']) && is_numeric($_GET['categoria'])) {
+        $stmt_cat = $pdo->prepare("SELECT id, nombre, icono FROM categorias WHERE id = ?");
+        $stmt_cat->execute([intval($_GET['categoria'])]);
+        $categoria_info = $stmt_cat->fetch();
+    }
+
     echo json_encode([
         'success' => true,
         'total' => count($productos),
+        'categoria' => $categoria_info,
         'productos' => $productos
     ]);
     

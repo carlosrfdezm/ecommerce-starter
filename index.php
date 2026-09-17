@@ -138,14 +138,14 @@ $page_title = 'Inicio';
 
     <!-- ===================================================== -->
     <!-- BANNER PROMO FINO -->
-    <!-- ===================================================== -->
+    <!-- ===================================================== 
     <div class="promo-strip">
         <i class="fas fa-truck"></i> Envío gratis en compras +$50
         <span class="sep hide-mobile">·</span>
         <span class="hide-mobile"><i class="fas fa-shield-alt"></i> Pago 100% seguro</span>
         <span class="sep hide-mobile">·</span>
         <span class="hide-mobile"><i class="fas fa-headset"></i> Soporte 24/7</span>
-    </div>
+    </div> -->
 
         <!-- ===================================================== -->
     <!-- BARRA DE BÚSQUEDA (sticky) -->
@@ -282,18 +282,31 @@ $page_title = 'Inicio';
         </div>
     </section>
 
-    <!-- ===================================================== -->
-    <!-- SECCIÓN: TODOS LOS PRODUCTOS -->
-    <!-- ===================================================== -->
-    <section class="products all-products" id="productos">
-        <div class="container">
-            <div class="section-header">
-                <span class="section-tag">📦 Catálogo completo</span>
-                <h2>Todos los <span class="gradient-text">productos</span></h2>
+        <!-- ===================================================== -->
+        <!-- SECCIÓN: TODOS LOS PRODUCTOS -->
+        <!-- ===================================================== -->
+        <section class="products all-products" id="productos">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-tag">📦 Catálogo completo</span>
+                    <h2>Todos los <span class="gradient-text">productos</span></h2>
+                </div>
+
+                <!-- Chips de categorías -->
+                <div class="category-chips" id="categoryChips">
+                    <button class="category-chip active" onclick="mostrarTodasLasCategorias()" data-categoria-id="0">
+                        <i class="fas fa-th-large"></i> Todas
+                    </button>
+                    <!-- Las categorías se cargan dinámicamente con JS -->
+                </div>
+
+                <!-- Banner de categoría activa (se muestra al filtrar) -->
+                <div id="categoryFilterBanner" class="category-filter-banner" style="display:none;"></div>
+
+                <!-- Grid de productos -->
+                <div class="product-grid" id="productGrid"></div>
             </div>
-            <div class="product-grid" id="productGrid"></div>
-        </div>
-    </section>
+        </section>
 
     <!-- ===================================================== -->
     <!-- TESTIMONIOS -->
@@ -664,5 +677,66 @@ $page_title = 'Inicio';
         }, { passive: true });
     })();
     </script>
+
+    <script>
+        // =====================================================
+        // AJUSTE DINÁMICO DEL PADDING-TOP
+        // =====================================================
+        (function() {
+            function ajustarPadding() {
+                // Solo en la home (con la clase has-bars)
+                if (!document.body.classList.contains('has-bars')) return;
+                
+                // Medir la altura real de cada barra
+                var navbar  = document.querySelector('.navbar');
+                var banner  = document.querySelector('.banners-carousel');
+                var search  = document.querySelector('.search-section');
+                var filters = document.querySelector('.filters-bar');
+                
+                var hNav = navbar  ? navbar.offsetHeight  : 0;
+                var hBan = banner  ? banner.offsetHeight  : 0;
+                var hSea = search  ? search.offsetHeight  : 0;
+                var hFil = filters ? filters.offsetHeight : 0;
+                
+                // Si el banner está oculto por scroll, no lo contamos
+                var bannerHidden = document.body.classList.contains('banner-hidden');
+                if (bannerHidden) hBan = 0;
+                
+                // Total + colchón de 20px para que la primera sección no quede pegada
+                var total = hNav + hBan + hSea + hFil + 20;
+                
+                document.body.style.paddingTop = total + 'px';
+                
+                console.log('📐 Padding ajustado:', {
+                    navbar: hNav,
+                    banner: hBan,
+                    search: hSea,
+                    filters: hFil,
+                    total: total,
+                    bannerHidden: bannerHidden
+                });
+            }
+            
+            // Ejecutar al cargar, al redimensionar y varias veces con delay
+            document.addEventListener('DOMContentLoaded', ajustarPadding);
+            window.addEventListener('load', ajustarPadding);
+            window.addEventListener('resize', ajustarPadding);
+            
+            // Por si el renderizado tarda
+            setTimeout(ajustarPadding, 200);
+            setTimeout(ajustarPadding, 600);
+            setTimeout(ajustarPadding, 1200);
+            
+            // Reajustar cuando el banner se oculta/muestra por scroll
+            var lastBannerState = false;
+            setInterval(function() {
+                var nowHidden = document.body.classList.contains('banner-hidden');
+                if (nowHidden !== lastBannerState) {
+                    lastBannerState = nowHidden;
+                    ajustarPadding();
+                }
+            }, 300);
+        })();
+        </script>
 </body>
 </html>

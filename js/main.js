@@ -376,6 +376,38 @@ async function loadCategories() {
     } catch (error) {
         console.error('❌ Error cargando categorías:', error);
     }
+
+    function renderCategories(categories) {
+        // ... tu código actual ...
+        
+        // ✅ NUEVO: Cargar los chips también
+        renderChips(categories);
+    }
+
+    // Renderizar los chips de categorías
+    function renderChips(categories) {
+        const container = document.getElementById('categoryChips');
+        if (!container) return;
+        
+        // Mantener el botón "Todas" y añadir las categorías
+        let html = `
+            <button class="category-chip active" onclick="mostrarTodasLasCategorias()" data-categoria-id="0">
+                <i class="fas fa-th-large"></i> Todas
+            </button>
+        `;
+        
+        categories.forEach(function(cat) {
+            html += `
+                <button class="category-chip" 
+                        onclick="filtrarPorCategoria(${cat.id}, '${cat.nombre.replace(/'/g, "\\'")}')"
+                        data-categoria-id="${cat.id}">
+                    <i class="fas ${cat.icono || 'fa-tag'}"></i> ${cat.nombre}
+                </button>
+            `;
+        });
+        
+        container.innerHTML = html;
+    }
 }
 
 function renderCategories(categories) {
@@ -403,29 +435,125 @@ function renderCategories(categories) {
 }
 
 // =====================================================
-// 10. FILTRAR POR CATEGORÍA
+// 10. FILTRAR POR CATEGORÍA (MEJORADO)
 // =====================================================
 async function filtrarPorCategoria(categoriaId, categoriaNombre) {
     const grid = document.getElementById('productGrid');
     if (!grid) return;
     
-    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:2rem;color:#94a3b8;">Cargando...</div>`;
+    // Mostrar loading
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:2rem;color:#94a3b8;">
+        <i class="fas fa-spinner fa-spin" style="font-size:2rem;"></i>
+        <p style="margin-top:0.5rem;">Cargando productos...</p>
+    </div>`;
+    
+    // Mostrar banner de categoría (aunque esté cargando)
+    mostrarBannerCategoria(categoriaNombre, '...');
+    
+    // Scroll al grid
+    const section = document.getElementById('productos');
+    if (section) section.scrollIntoView({ behavior: 'smooth' });
     
     try {
         const response = await fetch(API_URL + '?categoria=' + categoriaId);
         const data = await response.json();
-        let products = data.success && data.productos ? data.productos : (Array.isArray(data) ? data : []);
+        
+        let products = [];
+        if (data.success && Array.isArray(data.productos)) {
+            products = data.productos;
+        } else if (Array.isArray(data)) {
+            products = data;
+        }
+        
         window.productos = products;
         renderGrid(products);
-        const section = document.getElementById('productos');
-        if (section) section.scrollIntoView({ behavior: 'smooth' });
+        
+        // Actualizar banner con el contador real
+        mostrarBannerCategoria(categoriaNombre, products.length);
+        
+        // Actualizar contador de resultados
+        const contador = document.getElementById('resultadosContador');
+        if (contador) {
+            contador.textContent = products.length + ' productos encontrados en "' + categoriaNombre + '"';
+        }
+        
+        // Marcar chip activo
+        marcarChipActivo(categoriaId);
+        
     } catch (error) {
         console.error('❌ Error:', error);
+        grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:2rem;color:#ef4444;">
+            <i class="fas fa-exclamation-triangle" style="font-size:2rem;"></i>
+            <p>Error al cargar los productos</p>
+        </div>`;
     }
 }
 
-function cargarTodosLosProductos() {
+// Mostrar el banner de "categoría activa"
+function mostrarBannerCategoria(nombre, cantidad) {
+    let banner = document.getElementById('categoryFilterBanner');
+    
+    // Si no existe, lo creamos
+    if (!banner) {
+        banner = document.createElement('div');
+        banner.id = 'categoryFilterBanner';
+        banner.className = 'category-filter-banner';
+        
+        // Insertarlo antes del productGrid
+        const grid = document.getElementById('productGrid');
+        if (grid && grid.parentNode) {
+            grid.parentNode.insertBefore(banner, grid);
+        }
+    }
+    
+    banner.style.display = 'block';
+    banner.innerHTML = `
+        <div class="category-filter-content">
+            <div class="category-filter-info">
+                <i class="fas fa-filter"></i>
+                <span>Mostrando productos de:</span>
+                <strong id="categoryFilterName">${nombre}</strong>
+                <span class="category-filter-count">(${cantidad} ${cantidad === 1 ? 'producto' : 'productos'})</span>
+            </div>
+            <button class="category-filter-clear" onclick="resetearFiltros()">
+                <i class="fas fa-times"></i> Ver todas las categorías
+            </button>
+        </div>
+    `;
+}
+
+// Ocultar el banner
+function ocultarBannerCategoria() {
+    const banner = document.getElementById('categoryFilterBanner');
+    if (banner) {
+        banner.style.display = 'none';
+    }
+    desmarcarChips();
+}
+
+// Marcar el chip de categoría activo
+function marcarChipActivo(categoriaId) {
+    document.querySelectorAll('.category-chip').forEach(function(chip) {
+        chip.classList.remove('active');
+        if (chip.dataset.categoriaId == categoriaId) {
+            chip.classList.add('active');
+        }
+    });
+}
+
+// Desmarcar todos los chips
+function desmarcarChips() {
+    document.querySelectorAll('.category-chip').forEach(function(chip) {
+        chip.classList.remove('active');
+    });
+}
+
+// Mostrar todas las categorías
+function mostrarTodasLasCategorias() {
+    ocultarBannerCategoria();
     loadAllProducts();
+    const contador = document.getElementById('resultadosContador');
+    if (contador) contador.textContent = '';
 }
 
 // =====================================================
@@ -675,3 +803,8 @@ window.detenerAutoplay = detenerAutoplay;
         setTimeout(activarSwipes, 1500);
     }
 })();
+
+window.mostrarBannerCategoria = mostrarBannerCategoria;
+window.ocultarBannerCategoria = ocultarBannerCategoria;
+window.mostrarTodasLasCategorias = mostrarTodasLasCategorias;
+window.marcarChipActivo = marcarChipActivo;
