@@ -5,6 +5,13 @@
 console.log('📦 Cargando main.js...');
 
 // =====================================================
+// VARIABLES GLOBALES DEL CAROUSEL
+// (deben existir antes de cualquier uso)
+// =====================================================
+var _carouselState = {};
+var _autoplayTimers = {};
+
+// =====================================================
 // 1. CONFIGURACIÓN
 // =====================================================
 const BASE_PATH = window.location.pathname.replace(/\/[^\/]*$/, '');
@@ -361,7 +368,7 @@ async function loadCategories() {
         if (!response.ok) throw new Error('HTTP error ' + response.status);
         const data = await response.json();
         
-        // ✅ Manejar ambos formatos
+        // Manejar ambos formatos
         let categories = [];
         if (data.success && Array.isArray(data.categorias)) {
             categories = data.categorias;
@@ -373,40 +380,9 @@ async function loadCategories() {
         }
         
         renderCategories(categories);
+        renderChips(categories);
     } catch (error) {
         console.error('❌ Error cargando categorías:', error);
-    }
-
-    function renderCategories(categories) {
-        // ... tu código actual ...
-        
-        // ✅ NUEVO: Cargar los chips también
-        renderChips(categories);
-    }
-
-    // Renderizar los chips de categorías
-    function renderChips(categories) {
-        const container = document.getElementById('categoryChips');
-        if (!container) return;
-        
-        // Mantener el botón "Todas" y añadir las categorías
-        let html = `
-            <button class="category-chip active" onclick="mostrarTodasLasCategorias()" data-categoria-id="0">
-                <i class="fas fa-th-large"></i> Todas
-            </button>
-        `;
-        
-        categories.forEach(function(cat) {
-            html += `
-                <button class="category-chip" 
-                        onclick="filtrarPorCategoria(${cat.id}, '${cat.nombre.replace(/'/g, "\\'")}')"
-                        data-categoria-id="${cat.id}">
-                    <i class="fas ${cat.icono || 'fa-tag'}"></i> ${cat.nombre}
-                </button>
-            `;
-        });
-        
-        container.innerHTML = html;
     }
 }
 
@@ -432,6 +408,30 @@ function renderCategories(categories) {
         });
         grid.appendChild(card);
     });
+}
+
+function renderChips(categories) {
+    const container = document.getElementById('categoryChips');
+    if (!container) return;
+    
+    let html = `
+        <button class="category-chip active" onclick="mostrarTodasLasCategorias()" data-categoria-id="0">
+            <i class="fas fa-th-large"></i> Todas
+        </button>
+    `;
+    
+    categories.forEach(function(cat) {
+        const nombreEscapado = cat.nombre.replace(/'/g, "\\'");
+        html += `
+            <button class="category-chip" 
+                    onclick="filtrarPorCategoria(${cat.id}, '${nombreEscapado}')"
+                    data-categoria-id="${cat.id}">
+                <i class="fas ${cat.icono || 'fa-tag'}"></i> ${cat.nombre}
+            </button>
+        `;
+    });
+    
+    container.innerHTML = html;
 }
 
 // =====================================================
@@ -588,8 +588,12 @@ window.loadBestsellerProducts = loadBestsellerProducts;
 window.loadNewProducts = loadNewProducts;
 window.loadAllProducts = loadAllProducts;
 window.loadCategories = loadCategories;
-window.cargarTodosLosProductos = cargarTodosLosProductos;
 window.filtrarPorCategoria = filtrarPorCategoria;
+window.mostrarBannerCategoria = mostrarBannerCategoria;
+window.ocultarBannerCategoria = ocultarBannerCategoria;
+window.mostrarTodasLasCategorias = mostrarTodasLasCategorias;
+window.marcarChipActivo = marcarChipActivo;
+window.renderChips = renderChips;
 
 // =====================================================
 // 13. INICIALIZAR
@@ -612,11 +616,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 500);
 });
 
-
 // =====================================================
-// 14. SISTEMA DE CAROUSEL (AÑADIDO - NO TOCA NADA DE ARRIBA)
+// 14. SISTEMA DE CAROUSEL
 // =====================================================
-var _carouselState = {};
 
 function _getItemsPerView() {
     if (window.innerWidth < 640) return 1;
@@ -687,8 +689,6 @@ function _actualizarDots(trackId) {
         dotsContainer.appendChild(dot);
     }
 }
-
-var _autoplayTimers = {};
 
 function iniciarAutoplay(trackId, intervalo) {
     intervalo = intervalo || 5000;
@@ -803,8 +803,3 @@ window.detenerAutoplay = detenerAutoplay;
         setTimeout(activarSwipes, 1500);
     }
 })();
-
-window.mostrarBannerCategoria = mostrarBannerCategoria;
-window.ocultarBannerCategoria = ocultarBannerCategoria;
-window.mostrarTodasLasCategorias = mostrarTodasLasCategorias;
-window.marcarChipActivo = marcarChipActivo;
